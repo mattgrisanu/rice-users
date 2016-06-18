@@ -13,6 +13,6 @@ sequelize
   });
 
 module.exports = {
-  sequelize: sequelize,
+  db: sequelize,
   Sequelize: Sequelize
 };
