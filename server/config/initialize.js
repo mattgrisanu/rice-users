@@ -1,6 +1,8 @@
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
 
+require('./db.js');
+
 module.exports = function(app, express) {
   app.use(morgan('dev'));
   // app.use(express.static(__dirname + './../../client'));

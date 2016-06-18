@@ -9,7 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bookshelf": "^0.9.5",
     "express": "^4.14.0",
+    "knex": "^0.11.5",
+    "mongodb": "^2.1.18",
+    "mongoose": "^4.5.0",
     "morgan": "^1.7.0",
     "sequelize": "^3.23.3"
   }
