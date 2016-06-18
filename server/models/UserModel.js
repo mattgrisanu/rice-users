@@ -1,6 +1,28 @@
-var db = require('./../config/db.js');
-var s = db.s;
+var db = require('./../config/db.js').s;
+var Friend = require('./FriendModel.js');
 
+db.knex.schema.hasTable('users').then(function (exists) {
+  if (!exists) {
+    db.knex.schema.createTable('users', function(user) {
+      user.increments('id').primary();
+      user.timestamps();
+      user.string('name', 255);
+    }).then(function (table) {
+      console.log('Created Table', table);
+    });
+  }
+});
+
+var User = db.Model.extend({
+  tableName: 'users',
+  hasTimestamps: true,
+
+  friends: function () {
+    return this.hasMany(Friend);
+  }
+});
+
+module.exports = User;
 
 // var { db, Sequelize } = require('../config/db.js');
 
