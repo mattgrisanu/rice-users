@@ -6,6 +6,7 @@ var User = db.define('users', {
   type: Sequelize.string,
   name: Sequelize.string,
   /************************/
+  review_count
   votes: Sequelize.string,
   friend: 
   /************************/
