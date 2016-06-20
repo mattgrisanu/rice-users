@@ -11,8 +11,7 @@ var Friend = require('./../models/FriendModel.js');
 module.exports = {
   getFriends: function (req, res) {
     var query = {
-      user
-    }
+    };
   },
 
   addFriend: function (req, res) {

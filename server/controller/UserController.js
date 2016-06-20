@@ -5,5 +5,9 @@ var User = require('./../models/UserModel.js');
 module.exports = {
   getUsers: function (req, res) {
 
+  },
+
+  addUser: function (req, res) {
+    
   }
 };

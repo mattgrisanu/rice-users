@@ -18,11 +18,12 @@ var connection = {
   client: 'mysql',
   connection: {
     host     : '127.0.0.1',
-    database : 'users',
+    database : 'riceUsers',
     user     : 'riceAdmin',
     password : 'rice',
     charset  : 'utf8'
-  }
+  },
+  useNullAsDefault: true
 };
 
 var knex = require('knex')(connection);
