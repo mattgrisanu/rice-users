@@ -1,12 +1,18 @@
-var db = require('./../config/db.js').s;
+var db = require('./../config/db.js');
 var Friend = require('./FriendModel.js');
 
 db.knex.schema.hasTable('users').then(function (exists) {
   if (!exists) {
     db.knex.schema.createTable('users', function(user) {
-      user.increments('id').primary();
+      user.increments('db_id').primary();
       user.timestamps();
+      user.string('id', 255);
       user.string('name', 255);
+      user.string('email', 255);
+      user.integer('review_count');
+      
+      /* For seed data */
+      user.string('password', 255);
     }).then(function (table) {
       console.log('Created Table', table);
     });

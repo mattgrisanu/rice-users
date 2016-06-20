@@ -1,15 +1,15 @@
-/**
-* MongoDB database for seed data
-*/
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/usersM');
+// /**
+// * MongoDB database for seed data
+// */
+// var mongoose = require('mongoose');
+// mongoose.connect('mongodb://localhost/usersM');
 
-var m = mongoose.connection;
+// var m = mongoose.connection;
 
-m.on('error', console.error.bind(console, 'Error: Cannot connect to the database: usersM'));
-m.once('open', function () {
-  console.log('Connectd to the database: usersM');
-});
+// m.on('error', console.error.bind(console, 'Error: Cannot connect to the database: usersM'));
+// m.once('open', function () {
+//   console.log('Connectd to the database: usersM');
+// });
 
 /**
 * mySQL database for real data
@@ -18,20 +18,18 @@ var connection = {
   client: 'mysql',
   connection: {
     host     : '127.0.0.1',
-    user     : 'admin',
+    database : 'users',
+    user     : 'riceAdmin',
     password : 'rice',
-    database : 'usersS',
-    charset  : 'urtf8'
+    charset  : 'utf8'
+  }
 };
 
 var knex = require('knex')(connection);
 
 var s = require('bookshelf')(knex);
 
-module.exports = {
-  m : m,
-  s : s
-};
+module.exports = s;
 
 // var Sequelize = require('sequelize');
 // var sequelize = new Sequelize('rice_users', 'admin', 'rice', {

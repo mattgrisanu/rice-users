@@ -12,13 +12,15 @@ module.exports = {
   },
 
   getFriends: function (req, res) {
-    var id = res.body.user_id;
+    var id = { user_id: res.body.user_id };
 
-    User.find({user_id: id}).exec(function (err, allFriends) {
+    User.find(id).exec(function (err, user) {
       if (err) {
         console.error('Error: Cannot GET allFriends from the database for, ', user_id);
         res.status(500).send(err);
       }
+      
+      var allFriends = user.friends;
       res.status(200).send(allFriends);
     })
   },

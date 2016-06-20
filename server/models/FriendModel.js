@@ -1,10 +1,10 @@
-var db = require('./../config/db.js').s;
+var db = require('./../config/db.js');
 var User = require('./UserModel.js');
 
 db.knex.schema.hasTable('friends').then(function (exists) {
   if (!exists) {
     db.knex.schema.createTable('friends', function(friend) {
-      friend.increments('id').primary();
+      friend.increments('db_id').primary();
       friend.integer('user_id').unsigned().references('users.id');
       friend.integer('friend_id').unsigned().references('users.id');
       friend.timestamps();
