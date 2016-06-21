@@ -6,8 +6,8 @@ var User = require('./models/UserModel.js');
 var Friend = require('./models/FriendModel.js');
 
 var delimiter = ';';
-var friendCsvPath = '/../../../../../Downloads/friends_table.csv';
-var UserCsvPath = '/../../../../../Downloads/users_table.csv';
+var friendCsvPath = process.env.DATA_PATH + 'friends_table.csv';
+var UserCsvPath = process.env.DATA_PATH + 'users_table.csv';
 
 /**
 * what about duplicates??
