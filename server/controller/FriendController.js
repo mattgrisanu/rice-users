@@ -14,14 +14,60 @@ var Friend = require('./../models/FriendModel.js');
 // GET
 // get all friends for a user
 
+/**
+  * Can this be async? NO
+  */
+var _matchFriendToUser = function (allFriends, count, soFar, res) {
+  if (count === allFriends.length) {
+    res.status(200).send(soFar);
+    return;
+  }
+
+  var userId = allFriends[count].attributes.friend_id;
+
+  User.where({ id: userId }).fetch()
+    .then(function (matchedUser) {
+      soFar.push(matchedUser);
+
+      _matchFriendToUser(allFriends, ++count, soFar, res);
+    })
+    .catch(function (err) {
+      console.error('Error: Matching user and friend from db', err);
+      res.status(500).send(err);
+    });
+};
+
+var _checkForDuplicateAndSave = function (userId, friendId, allFriends, res) {
+  if (friendId === allFriends[allFriends.length -1]) {
+    res.status(201).send('Finished adding friends');
+    return;
+  }
+
+  var newFriend = {
+    user_id: userId,
+    friend_id: friendId
+  };
+
+  Friend.where(newFriend).fetchAll().then(function (matchedFriend) {
+    if (matchedFriend.length === 0) {
+      new Friend(newFriend).save()
+        .then(function (saved) {
+          console.log('Saved sucessfully to database', saved);
+        });
+    } else {
+      console.error('Error: Duplicate Friend or more than 1 match', matchedFriend);
+    }
+  })
+};
+
 module.exports = {
   getFriends: function (req, res) {
     var userId = res.body /************** what here? ***************/
-    var query = {
+    var user = {
       user_id: userId
     };
 
-    Friend.where(query).fetchAll()
+    Friend.where(user).fetchAll()
       .then(function (allFriends) { // primary key in user table
         _matchFriendToUser(allFriends.models, 0, [], res);
       })
@@ -31,52 +77,14 @@ module.exports = {
       });
   },
 
-  _matchFriendToUser: function (allFriends, count, soFar, res) {
-    if (count === allFriends.length) {
-      res.status(200).send(soFar);
-      return;
-    }
-
-    var userId = allFriends[count].attributes.friend_id;
-
-    User.where({ id: userId }).fetch()
-      .then(function (matchedUser) {
-        soFar.push(matchedUser);
-
-        _matchFriendToUser(allFriends, ++count, soFar, res);
-      })
-      .catch(function (err) {
-        console.error('Error: Matching user and friend from db', err);
-        res.status(500).send(err);
-      });
-  },
-
   addFriend: function (req, res) {
     // cannot add duplicate friend
-    var userId = res.body /************** what here? ***************/
-    var newFriends = res.body /************** what here? ***************/
-
-    var checkAndSaveToDb = function (u, f) {
-      var newFriend = {
-        user_id: u,
-        friend_id: f
-      };
-
-      Friend.where(newFriend).fetchAll().then(function (matchedFriend) {
-        if (matchedFriend.length === 0) {
-          new Friend(newFriend).save()
-            .then(function (saved) {
-              console.log('Saved sucessfully to database', saved);
-            });
-        } else {
-          console.error('Error: Duplicate Friend or more than 1 match', matchedFriend);
-        }
-      })
-    };
+    var userId = res.body.user_id;
+    var newFriends = res.body.friends;
 
     // async check and add
     for (var friend = 0; friend < newFriends.length; friend++) {
-      checkAndSaveToDb(userId, newFriends[friend]);
+      _checkForDuplicateAndSave(userId, newFriends[friend], newFriends);
     }
   }
 };

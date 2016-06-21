@@ -1,7 +1,10 @@
 var Preference = require('./../models/PreferenceModel.js');
 
 module.exports = {
-  _savePreferences: function (user_id, preferenceArray, res) {
+  /**
+  * Can this be async?
+  */
+  _savePreferences: function (user_id, clientId, preferenceArray, res) {
     var saveToDb = function (arr, count) {
       if (count === arr.length) {
         if (res !== undefined) {
@@ -12,6 +15,7 @@ module.exports = {
 
       var newPreference = {
         user_id: user_id,
+        clientId: clientId,
         preference: arr[count]
       };
 
@@ -29,7 +33,21 @@ module.exports = {
   },
 
   getPreferences: function (req, res) {
+    var clientId = res.body /************** what here? ***************/
 
+    Preference.where({ clientId: clientId }).fetchAll()
+      .then(function (allPreferences) {
+        var aggregatePreferences = {};
+        for (var preference = 0; preference < allPreferences.length; preference++) {
+          aggregatePreferences[allPreferences.models[preference].attributes.preference] = true;
+        }
+
+        res.status(200).send(aggregatePreferences);        
+      })
+      .catch(function (err) {
+        console.error('Error: Cannot find preferences in db', err);
+        res.status(500).send(err);
+      })
   },
 
   addPreference: function (req, res) {
