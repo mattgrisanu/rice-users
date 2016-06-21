@@ -62,7 +62,7 @@ var _checkForDuplicateAndSave = function (userId, friendId, allFriends, res) {
 
 module.exports = {
   getFriends: function (req, res) {
-    var userId = res.body /************** what here? ***************/
+    var userId = req.body /************** what here? ***************/
     var user = {
       user_id: userId
     };
@@ -79,8 +79,8 @@ module.exports = {
 
   addFriend: function (req, res) {
     // cannot add duplicate friend
-    var userId = res.body.user_id;
-    var newFriends = res.body.friends;
+    var userId = req.body.user_id;
+    var newFriends = req.body.friends;
 
     // async check and add
     for (var friend = 0; friend < newFriends.length; friend++) {

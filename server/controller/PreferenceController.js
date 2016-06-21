@@ -6,7 +6,7 @@ module.exports = {
   */
   _savePreferences: function (user_id, clientId, preferenceArray, res) {
     var saveToDb = function (arr, count) {
-      if (count === arr.length) {
+      if (arr === undefined || count === arr.length) {
         if (res !== undefined) {
           res.status(201).send('Add success');
         }
@@ -33,7 +33,7 @@ module.exports = {
   },
 
   getPreferences: function (req, res) {
-    var clientId = res.body /************** what here? ***************/
+    var clientId = req.body /************** what here? ***************/
 
     Preference.where({ clientId: clientId }).fetchAll()
       .then(function (allPreferences) {
