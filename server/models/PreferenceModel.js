@@ -6,7 +6,7 @@ db.knex.schema.hasTable('preferences').then(function (exists) {
     db.knex.schema.createTable('preferences', function (preference) {
       preference.increments('id').primary();
       preference.integer('user_id').unsigned().references('id').inTable('users');
-      preference.string('cuisine', 255);
+      preference.string('preference', 255);
       preference.timestamps();
     }).then(function (table) {
       console.log('Created "preferences" Table', table);

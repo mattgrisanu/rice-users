@@ -9,6 +9,10 @@ var delimiter = ';';
 var friendCsvPath = '/../../../../../Downloads/friends_table.csv';
 var UserCsvPath = '/../../../../../Downloads/users_table.csv';
 
+/**
+* what about duplicates??
+*/
+
 var writeUsersToDatabase = function (err, data) {
   if (err) {
     console.log("Error: Reading users_table CSV file => ", err);
@@ -50,6 +54,9 @@ var writeFriendsToDatabase = function (err, data) {
   if (err) {
     console.log("Error: Reading friends_table CSV file => ", err);
   } else {
+    /**
+    * Batch async calls so that pool does not timeout
+    */
     var saveToDb = function (d, count) {
       if (count === d.length) {
         return;
