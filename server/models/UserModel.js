@@ -5,9 +5,9 @@ db.knex.schema.hasTable('users').then(function (exists) {
   if (!exists) {
     db.knex.schema.createTable('users', function(user) {
       user.increments('id').primary();
-      user.string('clientId', 255);
+      user.string('clientId', 255).unique();
       user.string('name', 255);
-      user.string('email', 255);
+      user.string('email', 255).unique();
       user.integer('review_count');
       user.timestamps();
       

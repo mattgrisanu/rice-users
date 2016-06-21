@@ -33,7 +33,7 @@ module.exports = {
     new User(newUser).save()
       .then(function (saved) {
         console.log('Sucessfully saved => ', saved);
-        PreferenceController._savePreferences(saved.id, saved.clientId, user.preferences, res);
+        PreferenceController._savePreferences(saved.id, saved.attributes.clientId, user.preferences, res);
       })
       .catch(function (err) {
         console.error('Error: Saving to database', err);
