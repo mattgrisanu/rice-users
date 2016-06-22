@@ -112,18 +112,5 @@ module.exports = {
         }
       }
     });
-
-    // User.where({ clientId: req.body.user_id })
-    //   .fetch()
-    //   .then(function (matchedUser) {
-    //     // async check and add
-    //     for (var friend = 0; friend < newFriends.length; friend++) {
-    //       _checkForDuplicateAndSave(matchedUser.attributes.id, newFriends[friend], newFriends, res);
-    //     }
-    //   })
-    //   .catch(function (err) {
-    //     res.status(500).send('User with this cliendId: ', req.body.user_id, 'is not in the database');
-    //   })
-
   }
 };
