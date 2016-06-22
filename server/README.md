@@ -1,14 +1,22 @@
 # Users Service
 
-#### 1. Setup Environment Variables
+### Server-side setup
 
-##### Server side setup
+#### 1. Setup Environment Variables
 
   1. Copy and save the  ``` example.env ``` file in the env folder as ``` development.env ```.
   2. Enter your desired ```APP_NAME``` (this will your mysql database name)
   3. Replace the ```PORT``` with your desired port and enter the login credentials for your MySQL server (make sure it is running)
 
-#### 2. Setup database
+#### 2. Setup dependencies
+
+1. Install dependencies by running the following command from the root directory:
+
+	```
+	$ npm install
+	```
+
+#### 3. Setup database
 
 1. Start a mySQL server:
 
@@ -43,7 +51,8 @@ To see privileges on the account you've just created:
     ```
     mysql> SHOW GRANTS FOR 'DB_USER'@'localhost';
     ```
-# Server setup
+    
+#### 4. Start server
 
 1. Start the server by running the following command from the root directory:
 
@@ -51,3 +60,13 @@ To see privileges on the account you've just created:
     $ npm start
     ```
 2. Your server is now live at ```http://localhost:PORT```
+
+### Seeding database
+
+1. In the `development.env` file specific the path to the directory where the CSV data files are.
+2. Change the file names on line 9 and 10 in `seed.js` to match the CSV data file names.
+3. Run `seed.js` with the following command from `server/`:
+
+	```
+	$ node seed.js
+	```
