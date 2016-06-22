@@ -1,3 +1,10 @@
+// Load environment variables
+if (process.env.NODE_ENV === 'development') {
+  require('dotenv').config({ path: './server/env/development.env' });
+} else if (process.env.NODE_ENV === 'production') {
+  require('dotenv').config({ path: './server/env/production.env' });
+}
+
 var fs = require('fs');
 var parse = require('csv-parse');
 var UserController = require('./controller/UserController.js');
@@ -9,10 +16,14 @@ var delimiter = ';';
 var friendCsvPath = process.env.DATA_PATH + 'friends_table.csv';
 var UserCsvPath = process.env.DATA_PATH + 'users_table.csv';
 
+var batchSize = 1000;
 /**
 * what about duplicates??
 */
 
+/**
+* In series
+*/
 var writeUsersToDatabase = function (err, data) {
   if (err) {
     console.log("Error: Reading users_table CSV file => ", err);
@@ -24,6 +35,13 @@ var writeUsersToDatabase = function (err, data) {
       }
 
       var split = d[count][0].split(',');
+
+      // Do not store rows with clientId #NAME?
+      if (split[0] === '#NAME?') {
+        saveToDb(d, ++count);
+        return;
+      }
+
       var newUser = {
         clientId: split[0],
         name: split[1],
@@ -35,9 +53,10 @@ var writeUsersToDatabase = function (err, data) {
       new User(newUser).save()
         .then(function (saved) {
 
-          if (count % 5000 === 0) {
-            console.log('Saved ', saved, 'to the database');
-          }
+          // if (Math.floor((count/d.length)*100)%10 === 0) {
+          //   console.log('here');
+          //   console.log((count/d.length)*100, '% complete');
+          // }
 
           saveToDb(d, ++count);
         })
@@ -54,9 +73,7 @@ var writeFriendsToDatabase = function (err, data) {
   if (err) {
     console.log("Error: Reading friends_table CSV file => ", err);
   } else {
-    /**
-    * Batch async calls so that pool does not timeout
-    */
+    
     var saveToDb = function (d, count) {
       if (count === d.length) {
         return;
@@ -65,6 +82,12 @@ var writeFriendsToDatabase = function (err, data) {
       var split = d[count][0].split(',');
       var userId = split[0];
       var friendId = split[1];
+
+      // Do not store rows with clientId #NAME?
+      if (userId === '#NAME?' || friendId === '#NAME?') {
+        saveToDb(d, ++count);
+        return;
+      }
 
       User.where({ clientId: userId }).fetch()
         .then(function (matchedUser) {
@@ -78,9 +101,9 @@ var writeFriendsToDatabase = function (err, data) {
               new Friend(newFriend).save()
                 .then(function (saved) {
 
-                  if (count % 5000 === 0) {
-                    console.log('Saved ', saved, 'to the database');
-                  }
+                  // if (Math.floor((count/d.length)*100)%10 === 0) {
+                  //   console.log((count/d.length)*100, '% complete');
+                  // }
 
                   saveToDb(d, ++count);
                 });
@@ -94,6 +117,11 @@ var writeFriendsToDatabase = function (err, data) {
     saveToDb(data, 1);
   }
 };
+
+/**
+* async db writing
+*/
+
 
 var readAndWriteFromFile = function (path, cb) {
   fs.createReadStream(__dirname + path)
