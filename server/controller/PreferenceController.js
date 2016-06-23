@@ -2,34 +2,25 @@ var Preference = require('./../models/PreferenceModel.js');
 
 module.exports = {
   /**
-  * Can this be async?
+  * Can this be async? Yes
   */
-  _savePreferences: function (user_id, clientId, preferenceArray, res) {
-    var saveToDb = function (arr, count) {
-      if (arr === undefined || count === arr.length) {
+  _savePreference: function (user_id, clientId, preference, res) {
+    var newPreference = {
+        user_id: user_id,
+        clientId: clientId,
+        preference: preference
+      };
+
+    new Preference(newPreference).save()
+      .then(function (saved) {
+        console.log('Successfull saved preference', saved);
         if (res !== undefined) {
           res.status(201).send('Add success');
         }
-        return;
-      }
-
-      var newPreference = {
-        user_id: user_id,
-        clientId: clientId,
-        preference: arr[count]
-      };
-
-      new Preference(newPreference).save()
-        .then(function (saved) {
-          console.log('Successfull saved preference', saved);
-          saveToDb(preferenceArray, ++count);
-        })
-        .catch(function (err) {
-          console.error('Error: Saving preference to the database', err);
-        });
-    };
-
-    saveToDb(preferenceArray, 0);
+      })
+      .catch(function (err) {
+        console.error('Error: Saving preference to the database', err);
+      });
   },
 
   getPreferences: function (req, res) {
