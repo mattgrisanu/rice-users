@@ -1,7 +1,13 @@
 var dropTable = require('./dropTable.js');
+var droptable = dropTable.dropTable;
+var db = dropTable.db;
+var User = require('./../models/UserModel.js');
 
-var tableNames = ['users', 'friends', 'preferences'];
+/**
+* Make sure your children foriegn key tables are dropped first
+* In ordering tableNames => make sure children foreign key tables
+* are before its parent foreign key tables
+*/
+var tableNames = ['friends', 'preferences', 'users'];
 
-for (var table = 0; table < tableNames.length; table++) {
-  dropTable(tableNames[table]);
-}
+droptable(tableNames, 0);

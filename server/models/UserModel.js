@@ -1,5 +1,6 @@
 var db = require('./../config/db.js');
 var Friend = require('./FriendModel.js');
+var Preference = require('./PreferenceModel.js');
 
 db.knex.schema.hasTable('users').then(function (exists) {
   if (!exists) {
@@ -27,6 +28,9 @@ var User = db.Model.extend({
   },
   friends: function () {
     return this.hasMany(Friend);
+  },
+  preferences: function () {
+    return this.hasMany(Preference);
   }
 });
 

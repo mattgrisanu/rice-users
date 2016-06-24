@@ -1,10 +1,7 @@
-/**
-* mySQL database for real data
-*/
 var connection = {
   client: 'mysql',
   connection: {
-    host     : process.env.HOST,
+    host     : 'riceusers.c3shwdr3cslh.us-west-2.rds.amazonaws.com',
     database: process.env.APP_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -14,4 +11,5 @@ var connection = {
 };
 
 var knex = require('knex')(connection);
-module.exports = require('bookshelf')(knex);
+
+module.exports = require('bookshelf')(knex)
