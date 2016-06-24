@@ -46,7 +46,7 @@ module.exports = {
     new User(newUser).save()
       .then(function (saved) {
         if (user.preferences.length === 0) {
-        console.log('Sucessfully saved => ', saved);
+          console.log('Sucessfully saved => ', saved);
           res.status(201).send('Add success');
         } else {
           for (var preference = 0; preference < user.preferences.length; preference++) {

@@ -12,5 +12,6 @@ module.exports = function (app) {
   app.post('/api/users/friends', FriendController.addFriend);
 
   app.get('/api/users/preferences', PreferenceController.getPreferences);
+  app.get('/api/users/group/preferences', PreferenceController.getGroupPreferences);
   app.post('/api/users/preferences', PreferenceController.addPreference);
 };
