@@ -45,19 +45,19 @@ module.exports = {
 
     new User(newUser).save()
       .then(function (saved) {
-        console.log('Sucessfully saved => ', saved);
         if (user.preferences.length === 0) {
+        console.log('Sucessfully saved => ', saved);
           res.status(201).send('Add success');
         } else {
           for (var preference = 0; preference < user.preferences.length; preference++) {
-            res = (preference === user.preferences.length -1) ? res : undefined;
+            var tmpRes = (preference === user.preferences.length -1) ? res : undefined;
             
             PreferenceController
               ._savePreference(
                 saved.id, 
                 saved.attributes.clientId, 
                 user.preferences[preference], 
-                res
+                tmpRes
               );
           }
         }
