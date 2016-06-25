@@ -11,6 +11,19 @@ var PreferenceController = require('./../controller/PreferenceController.js');
 */
 
 module.exports = {
+  getUser: function (req, res) {
+    var clientId = req.body.clientId;
+
+    User.where({ clientId: clientId}).fetch()
+      .then(function (user) {
+        res.status(200).send(user);
+      })
+      .catch(function (err) {
+        console.error('Error: Fetching user from db', err);
+        res.status(500).send(err);
+      })
+  },
+  
   getUsers: function (req, res) {
     User.where({}).fetchAll()
       .then(function (allUsers) {
