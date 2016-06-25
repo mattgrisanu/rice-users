@@ -1,5 +1,19 @@
 var Preference = require('./../models/PreferenceModel.js');
 
+/** getGroupPreferences request **/
+/** req.body =
+{
+  group: [ 
+  clientId#1,
+  clientId#2
+  ]
+}
+*/
+
+/** getGroupPreferences response **/
+/** res = []; => array of unique perferences from all users
+*/
+
 module.exports = {
   /**
   * Can this be async? Yes
@@ -24,7 +38,7 @@ module.exports = {
   },
 
   getPreferences: function (req, res) {
-    var clientId = req.body /************** what here? ***************/
+    var clientId = req.body.clientId; /************** what here? ***************/
 
     Preference.where({ clientId: clientId }).fetchAll()
       .then(function (allPreferences) {
@@ -39,6 +53,11 @@ module.exports = {
         console.error('Error: Cannot find preferences in db', err);
         res.status(500).send(err);
       })
+  },
+
+  getGroupPreferences: function (req, res) {
+    var clientId
+
   },
 
   addPreference: function (req, res) {
