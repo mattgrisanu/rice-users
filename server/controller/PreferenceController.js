@@ -16,14 +16,15 @@ var _getUserPreferencesAsArray = function (clientId) {
     })
 };
 
-var _getUsersPreferencesAsArray = function (clientIdArray, preferencesSoFar, count) {
+var _getUsersPreferencesAsArray = function (clientIdArray, preferencesSoFar, count, res) {
   if (count >= clientIdArray.length) {
+    res.status(201).send(preferencesSoFar);
     return preferencesSoFar;
   } else {
     _getUserPreferencesAsArray(clientIdArray[count])
       .then(function (allPreferences) {
         preferencesSoFar.push(allPreferences);
-        return _getUsersPreferencesAsArray(clientIdArray, preferencesSoFar, ++count);
+        _getUsersPreferencesAsArray(clientIdArray, preferencesSoFar, ++count, res);
       })
       .catch(function (err) {
         console.error('Error: Failed to get preferences for', clientIdArray[count], '=>', err);
@@ -79,13 +80,13 @@ module.exports = {
   */
 
   /** getGroupPreferences response **/
-  /** res = []; => array of unique perferences from all users
+  /** res = []; => arrays of arrays of each user preference
   */
   getGroupPreferences: function (req, res) {
-    var clientIdArray = req.query.group;
+    var clientIdArray = req.body.group;
     var allPreferences = []; // {pref: 0, ...}
 
-    res.status(200).send(_getUsersPreferencesAsArray(clientIdArray, allPreferences, 0));
+    _getUsersPreferencesAsArray(clientIdArray, allPreferences, 0, res);
   },
 
   addPreference: function (req, res) {

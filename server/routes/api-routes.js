@@ -8,11 +8,13 @@ module.exports = function (app) {
 
   app.get('/api/users/user', UserController.getUser); // give all single user info
 
+  app.post('/api/users/user/update', UserController.updateUser);
+
   app.get('/api/users/friends', FriendController.getFriends);
   app.post('/api/users/friends', FriendController.addFriend);
 
   app.get('/api/users/preferences', PreferenceController.getPreferences);
   app.post('/api/users/preferences', PreferenceController.addPreference);
   
-  app.get('/api/users/group/preferences', PreferenceController.getGroupPreferences);
+  app.post('/api/users/group/preferences', PreferenceController.getGroupPreferences);
 };

@@ -10,6 +10,7 @@ db.knex.schema.hasTable('users').then(function (exists) {
       user.string('name', 255);
       user.string('email', 255).unique();
       user.integer('review_count');
+      user.boolean('isOnboarded');
       user.timestamps();
       
       /* For seed data */
@@ -24,7 +25,8 @@ var User = db.Model.extend({
   tableName: 'users',
   hasTimestamps: true,
   defaults: {
-    review_count: 0
+    review_count: 0,
+    isOnboarded: false
   },
   friends: function () {
     return this.hasMany(Friend);
