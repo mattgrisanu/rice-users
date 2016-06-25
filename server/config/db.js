@@ -5,6 +5,12 @@ var connection = {
     database: process.env.APP_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
+
+    host     : 'localhost',
+    database: riceUsers,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+
     charset  : 'utf8'
   },
   useNullAsDefault: true

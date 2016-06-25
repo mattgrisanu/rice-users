@@ -1,18 +1,37 @@
 var Preference = require('./../models/PreferenceModel.js');
+var oneOrIncrement = require('./../lib/utils.js').oneOrIncrement;
+var objectToArray = require('./../lib/utils.js').objectToArray;
 
-/** getGroupPreferences request **/
-/** req.body =
-{
-  group: [ 
-  clientId#1,
-  clientId#2
-  ]
-}
+/**
+* Needs to be
 */
+var _getUserPreferences =  function (clientId) {
+  return Preference.where({ clientId: clientId }).fetchAll()
+    .then(function (allPreferences) {
+      var aggregatePreferences = {};
+      for (var preference = 0; preference < allPreferences.length; preference++) {
+        aggregatePreferences = oneOrIncrement(allPreferences.models[preference].attributes.preference, aggregatePreferences);
+      }
+      return aggregatePreferences;    
+    })
+};
 
-/** getGroupPreferences response **/
-/** res = []; => array of unique perferences from all users
-*/
+var _getUsersPreferences = function (clientIdArray, preferencesSoFar, count) {
+  if (count < clientIdArray.length) {
+    return _getUserPreferences(clientIdArray[count])
+      .then(function (allPreferences) {
+        for (var preference in allPreferences) {
+          preferencesSoFar = oneOrIncrement(preference, preferencesSoFar)
+        }
+        return _getUsersPreferences(clientIdArray, preferencesSoFar, ++count);
+      })
+      .catch(function (err) {
+        console.error('Error: Failed to get preferences for', clientIdArray[count], '=>', err);
+      })
+  } else {
+    return preferencesSoFar;
+  }
+};
 
 module.exports = {
   /**
@@ -40,14 +59,9 @@ module.exports = {
   getPreferences: function (req, res) {
     var clientId = req.body.clientId; /************** what here? ***************/
 
-    Preference.where({ clientId: clientId }).fetchAll()
+    _getUserPreferences(clientId)
       .then(function (allPreferences) {
-        var aggregatePreferences = {};
-        for (var preference = 0; preference < allPreferences.length; preference++) {
-          aggregatePreferences[allPreferences.models[preference].attributes.preference] = true;
-        }
-
-        res.status(200).send(aggregatePreferences);        
+        res.status(200).send(allPreferences);
       })
       .catch(function (err) {
         console.error('Error: Cannot find preferences in db', err);
@@ -55,9 +69,30 @@ module.exports = {
       })
   },
 
-  getGroupPreferences: function (req, res) {
-    var clientId
+  /** getGroupPreferences request **/
+  /** req.body =
+  {
+    group: [ 
+    clientId#1,
+    clientId#2
+    ]
+  }
+  */
 
+  /** getGroupPreferences response **/
+  /** res = []; => array of unique perferences from all users
+  */
+  getGroupPreferences: function (req, res) {
+    var clientIdArray = req.body.group;
+    var allPreferences = {}; // {pref: 0, ...}
+
+    _getUsersPreferences(clientIdArray, allPreferences, 0)
+      .then(function (preferencesSoFar) {
+        res.status(200).send(objectToArray(preferencesSoFar));
+      })
+      .catch(function (err) {
+        res.status(500).send(err);
+      })
   },
 
   addPreference: function (req, res) {
