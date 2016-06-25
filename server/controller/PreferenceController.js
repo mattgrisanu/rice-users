@@ -2,36 +2,35 @@ var Preference = require('./../models/PreferenceModel.js');
 var oneOrIncrement = require('./../lib/utils.js').oneOrIncrement;
 var objectToArray = require('./../lib/utils.js').objectToArray;
 
-/**
-* Needs to be
+/**************
+* OUTPUT: [[client#1pref#1, client#1pref#2, ..., client#1pref#n], [], [], ... , []]
 */
-var _getUserPreferences =  function (clientId) {
+var _getUserPreferencesAsArray = function (clientId) {
   return Preference.where({ clientId: clientId }).fetchAll()
     .then(function (allPreferences) {
-      var aggregatePreferences = {};
+      var aggregatePreferences = [];
       for (var preference = 0; preference < allPreferences.length; preference++) {
-        aggregatePreferences = oneOrIncrement(allPreferences.models[preference].attributes.preference, aggregatePreferences);
+        aggregatePreferences.push(allPreferences.models[preference].attributes.preference);
       }
       return aggregatePreferences;    
     })
 };
 
-var _getUsersPreferences = function (clientIdArray, preferencesSoFar, count) {
-  if (count < clientIdArray.length) {
-    return _getUserPreferences(clientIdArray[count])
+var _getUsersPreferencesAsArray = function (clientIdArray, preferencesSoFar, count) {
+  if (count >= clientIdArray.length) {
+    return preferencesSoFar;
+  } else {
+    _getUserPreferencesAsArray(clientIdArray[count])
       .then(function (allPreferences) {
-        for (var preference in allPreferences) {
-          preferencesSoFar = oneOrIncrement(preference, preferencesSoFar)
-        }
-        return _getUsersPreferences(clientIdArray, preferencesSoFar, ++count);
+        preferencesSoFar.push(allPreferences);
+        return _getUsersPreferencesAsArray(clientIdArray, preferencesSoFar, ++count);
       })
       .catch(function (err) {
         console.error('Error: Failed to get preferences for', clientIdArray[count], '=>', err);
       })
-  } else {
-    return preferencesSoFar;
   }
 };
+/**************/
 
 module.exports = {
   /**
@@ -57,9 +56,9 @@ module.exports = {
   },
 
   getPreferences: function (req, res) {
-    var clientId = req.body.clientId; /************** what here? ***************/
+    var clientId = req.query.clientId; /************** what here? ***************/
 
-    _getUserPreferences(clientId)
+    _getUserPreferencesAsArray(clientId)
       .then(function (allPreferences) {
         res.status(200).send(allPreferences);
       })
@@ -83,16 +82,10 @@ module.exports = {
   /** res = []; => array of unique perferences from all users
   */
   getGroupPreferences: function (req, res) {
-    var clientIdArray = req.body.group;
-    var allPreferences = {}; // {pref: 0, ...}
+    var clientIdArray = req.query.group;
+    var allPreferences = []; // {pref: 0, ...}
 
-    _getUsersPreferences(clientIdArray, allPreferences, 0)
-      .then(function (preferencesSoFar) {
-        res.status(200).send(objectToArray(preferencesSoFar));
-      })
-      .catch(function (err) {
-        res.status(500).send(err);
-      })
+    res.status(200).send(_getUsersPreferencesAsArray(clientIdArray, allPreferences, 0));
   },
 
   addPreference: function (req, res) {

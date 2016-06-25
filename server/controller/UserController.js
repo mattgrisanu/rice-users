@@ -23,7 +23,7 @@ module.exports = {
         res.status(500).send(err);
       })
   },
-  
+
   getUsers: function (req, res) {
     User.where({}).fetchAll()
       .then(function (allUsers) {

@@ -81,7 +81,7 @@ var _checkForDuplicateAndSave = function (user_Id, friendClientId, allFriends, r
 
 module.exports = {
   getFriends: function (req, res) {
-    var userId = req.body.clientId; /************** what here? ***************/
+    var userId = req.query.clientId; /************** what here? ***************/
     var user = {
       user_id: userId
     };
