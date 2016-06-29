@@ -26,6 +26,18 @@ module.exports = {
       });
   },
 
+  /**
+  * req.body =>
+  * {
+  *   name: ''
+  *   email: ''
+  *   clientId: ''
+  *   review_count: integer
+  *   password: ''
+  *   isOnboarded: boolean
+  *   preferences: []
+  */
+
   updateUser: function (req, res) {
     var user = req.body;
 
@@ -42,6 +54,17 @@ module.exports = {
           isOnboarded: user.isOnboarded || matchedUser.attributes.isOnboarded
         };
 
+        if (user.preferences.length > 0) {
+          for (var preference = 0; preference < user.preferences.length; preference++) {
+            PreferenceController
+              ._savePreference(
+                matchedUser.id,
+                matchedUser.attributes.clientId,
+                user.preferences[preference]
+              );
+          }
+        }
+
         new User({ id: matchedUser.id }).save(newUser, { patch: true })
           .then(function (saved) {
             console.log('UPATED user =>', saved);
@@ -53,40 +76,5 @@ module.exports = {
           })
       });
 
-  },
-
-  addUser: function (req, res) {
-    var user = req.body;
-    var newUser = {
-      name: user.name,
-      email: user.email,
-      clientId: user.clientId,
-      isOnboarded: user.isOnboarded
-    };
-
-    new User(newUser).save()
-      .then(function (saved) {
-        if (user.preferences.length === 0) {
-          console.log('Sucessfully saved => ', saved);
-          res.status(201).send('Add success');
-        } else {
-          for (var preference = 0; preference < user.preferences.length; preference++) {
-            var tmpRes = (preference === user.preferences.length -1) ? res : undefined;
-
-            PreferenceController
-              ._savePreference(
-                saved.id,
-                saved.attributes.clientId,
-                user.preferences[preference],
-                tmpRes
-              );
-          }
-        }
-
-      })
-      .catch(function (err) {
-        console.error('Error: Saving to database', err);
-        res.status(500).send(err);
-      })
   }
 };

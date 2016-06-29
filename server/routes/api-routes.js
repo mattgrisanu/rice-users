@@ -4,11 +4,9 @@ var PreferenceController = require('./../controller/PreferenceController.js');
 
 module.exports = function (app) {
   app.get('/api/users/users', UserController.getUsers);
-  app.post('/api/users/users', UserController.addUser);
+  app.post('/api/users/user/update', UserController.updateUser);
 
   app.get('/api/users/user', UserController.getUser); // give all single user info
-
-  app.post('/api/users/user/update', UserController.updateUser);
 
   app.get('/api/users/friends', FriendController.getFriends);
   app.post('/api/users/friends', FriendController.addFriend);
