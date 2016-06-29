@@ -1,15 +1,6 @@
 var User = require('./../models/UserModel.js');
 var PreferenceController = require('./../controller/PreferenceController.js');
 
-/**
-* {
-*   name:
-*   email: 
-*   user_id: 
-*   preferences: [] 
-* }
-*/
-
 module.exports = {
   getUser: function (req, res) {
     var clientId = req.query.user_id;
@@ -38,7 +29,7 @@ module.exports = {
   updateUser: function (req, res) {
     var user = req.body;
 
-    User.where({ clientId: user.user_id }).fetch()
+    User.where({ clientId: user.clientId }).fetch()
       .then(function (matchedUser) {
         console.log('Old User before UPDATE =>', matchedUser);
 
@@ -47,7 +38,8 @@ module.exports = {
           email: user.email || matchedUser.attributes.email,
           clientId: matchedUser.attributes.clientId,
           review_count: user.review_count || matchedUser.attributes.review_count,
-          password: user.password || matchedUser.attributes.password
+          password: user.password || matchedUser.attributes.password,
+          isOnboarded: user.isOnboarded || matchedUser.attributes.isOnboarded
         };
 
         new User({ id: matchedUser.id }).save(newUser, { patch: true })
@@ -68,7 +60,8 @@ module.exports = {
     var newUser = {
       name: user.name,
       email: user.email,
-      clientId: user.user_id
+      clientId: user.clientId,
+      isOnboarded: user.isOnboarded
     };
 
     new User(newUser).save()
@@ -79,12 +72,12 @@ module.exports = {
         } else {
           for (var preference = 0; preference < user.preferences.length; preference++) {
             var tmpRes = (preference === user.preferences.length -1) ? res : undefined;
-            
+
             PreferenceController
               ._savePreference(
-                saved.id, 
-                saved.attributes.clientId, 
-                user.preferences[preference], 
+                saved.id,
+                saved.attributes.clientId,
+                user.preferences[preference],
                 tmpRes
               );
           }

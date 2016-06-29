@@ -12,7 +12,7 @@ db.knex.schema.hasTable('users').then(function (exists) {
       user.integer('review_count');
       user.boolean('isOnboarded');
       user.timestamps();
-      
+
       /* For seed data */
       user.string('password', 255);
     }).then(function (table) {
