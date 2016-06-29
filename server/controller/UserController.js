@@ -12,9 +12,9 @@ var PreferenceController = require('./../controller/PreferenceController.js');
 
 module.exports = {
   getUser: function (req, res) {
-    var clientId = req.query.clientId;
+    var clientId = req.query.user_id;
 
-    User.where({ clientId: clientId}).fetch()
+    User.where({ clientId: clientId }).fetch()
       .then(function (user) {
         res.status(200).send(user);
       })
