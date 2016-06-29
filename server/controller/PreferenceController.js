@@ -37,7 +37,7 @@ module.exports = {
   /**
   * Can this be async? Yes
   */
-  _savePreference: function (user_id, clientId, preference, res) {
+  _savePreference: function (user_id, clientId, preference) {
     var newPreference = {
         user_id: user_id,
         clientId: clientId,
@@ -47,9 +47,6 @@ module.exports = {
     new Preference(newPreference).save()
       .then(function (saved) {
         console.log('Successfull saved preference', saved);
-        if (res !== undefined) {
-          res.status(201).send('Add success');
-        }
       })
       .catch(function (err) {
         console.error('Error: Saving preference to the database', err);
