@@ -81,28 +81,35 @@ var _checkForDuplicateAndSave = function (user_Id, friendClientId, allFriends, r
 
 module.exports = {
   getFriends: function (req, res) {
-    var userId = req.query.clientId; /************** what here? ***************/
+    var clientId = req.body.clientId; /************** what here? ***************/
     var user = {
-      user_id: userId
+      clientId: clientId
     };
 
-    Friend.where(user).fetchAll()
-      .then(function (allFriends) { // primary key in user table
-        _getFriendInfoFromAllFriends(allFriends.models, 0, [], res);
-      })
-      .catch(function (err) {
-        console.error('Error: Fetching all friends from db', err);
-        res.status(500).send(err);
-      });
+    _matchClientIdToId(clientId, function (err, matchedUser) {
+      var user = {
+        user_id: matchedUser.id
+      };
+      
+      Friend.where(user).fetchAll()
+        .then(function (allFriends) { // primary key in user table
+          _getFriendInfoFromAllFriends(allFriends.models, 0, [], res);
+        })
+        .catch(function (err) {
+          console.error('Error: Fetching all friends from db', err);
+          res.status(500).send(err);
+        });
+    })
+
   },
 
   addFriend: function (req, res) {
     console.log('POST friends => ', req.body); // clientId
-    // cannot add duplicate friend
 
-    var newFriends = req.body.friends; // clientId
+    // cannot add duplicate friend
+    var newFriends = req.body.friends; // array of clientId, [clientId#1, clientId#2, ..., clientId#3]
     // match clientId with db user id
-    _matchClientIdToId(req.body.user_id, function (err, matchedUser) {
+    _matchClientIdToId(req.body.clientId, function (err, matchedUser) {
       if (err) {
         res.status(500).send('User with this cliendId: ', req.body.user_id, ' is not in the database');
       } else {

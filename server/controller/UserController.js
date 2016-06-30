@@ -3,7 +3,7 @@ var PreferenceController = require('./../controller/PreferenceController.js');
 
 module.exports = {
   getUser: function (req, res) {
-    var clientId = req.query.user_id;
+    var clientId = req.body.clientId;
 
     User.where({ clientId: clientId }).fetch()
       .then(function (user) {
@@ -74,7 +74,46 @@ module.exports = {
             console.error('Error: Updatin user info ', err);
             res.status(500).send(err);
           })
+      })
+      .catch(function (err) {
+        console.error('Error: Matching user info, clientId ', user.clientId, 'does not exists', err);
+        res.status(500).send(err);
       });
+  },
 
+  addUser: function (req, res) {
+  //   var user = req.body;
+  //   var newUser = {
+  //     name: user.name,
+  //     email: user.email,
+  //     password
+  //     clientId: user.clientId,
+  //     isOnboarded: user.isOnboarded
+  //   };
+
+  //   new User(newUser).save()
+  //     .then(function (saved) {
+  //       if (user.preferences.length === 0) {
+  //         console.log('Sucessfully saved => ', saved);
+  //         res.status(201).send('Add success');
+  //       } else {
+  //         for (var preference = 0; preference < user.preferences.length; preference++) {
+  //           var tmpRes = (preference === user.preferences.length -1) ? res : undefined;
+
+  //           PreferenceController
+  //             ._savePreference(
+  //               saved.id,
+  //               saved.attributes.clientId,
+  //               user.preferences[preference],
+  //               tmpRes
+  //             );
+  //         }
+  //       }
+
+  //     })
+  //     .catch(function (err) {
+  //       console.error('Error: Saving to database', err);
+  //       res.status(500).send(err);
+  //     });
   }
 };

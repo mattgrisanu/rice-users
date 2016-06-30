@@ -1,4 +1,5 @@
 var Preference = require('./../models/PreferenceModel.js');
+var User = require('./../models/UserModel.js');
 var oneOrIncrement = require('./../lib/utils.js').oneOrIncrement;
 var objectToArray = require('./../lib/utils.js').objectToArray;
 
@@ -33,28 +34,80 @@ var _getUsersPreferencesAsArray = function (clientIdArray, preferencesSoFar, cou
 };
 /**************/
 
-module.exports = {
-  /**
-  * Can this be async? Yes
-  */
-  _savePreference: function (user_id, clientId, preference) {
-    var newPreference = {
+var _hasPreference = function (clientId, preference) {
+  var query = {
+    clientId: clientId,
+    preference: preference
+  };
+
+  return Preference.where(query).fetch()
+    .then(function (matchedUserPreference) {
+      console.log('Matched cliendId and Preference', matchedUserPreference);
+      if (matchedUserPreference === null) {
+        return false;
+      } else {
+        return true;
+      }
+    })
+    .catch(function (err) {
+      console.error('Error: Matching ClientId and Preference', err);
+      return err;
+    })
+}
+
+/**********************************/
+var _savePreference = function (user_id, clientId, preference, res) {
+  return _hasPreference(clientId, preference)
+    .then(function (exists) {
+      if (!exists) {
+        var newPreference = {
         user_id: user_id,
         clientId: clientId,
         preference: preference
       };
 
-    new Preference(newPreference).save()
-      .then(function (saved) {
-        console.log('Successfull saved preference', saved);
-      })
-      .catch(function (err) {
-        console.error('Error: Saving preference to the database', err);
-      });
-  },
+      return new Preference(newPreference).save()
+        .then(function (saved) {
+          console.log('Successfull saved preference', saved);
+          return saved;
+        })
+        .catch(function (err) {
+          console.error('Error: Saving preference to the database', err);
+          return err;
+        });
+      } else {
+        console.log('Preference for ', clientId, 'already exists!');
+        return exists;
+      }    
+    });
+}
+/**
+* recursive
+*/
+var _savePreferences = function (user_id, clientId, preferencesArr, count, res) {
+  if (count === preferencesArr.length) {
+    res.status(201).send('Save preferences successful');
+    return;
+  }
+
+  _savePreference(user_id, clientId, preferencesArr[count])
+    .then(function (saved) {
+      return _savePreferences(user_id, clientId, preferencesArr, ++count, res);
+    })
+    .catch(function (err) {
+      console.error('Error: Cannot save ', preferencesArr[count], ' ', err);
+      res.status(500).send(err);
+      return;
+    })
+
+}
+/**********************************/
+
+module.exports = {
+  _savePreference: _savePreference,
 
   getPreferences: function (req, res) {
-    var clientId = req.query.clientId; /************** what here? ***************/
+    var clientId = req.body.clientId; /************** what here? ***************/
 
     _getUserPreferencesAsArray(clientId)
       .then(function (allPreferences) {
@@ -63,7 +116,7 @@ module.exports = {
       .catch(function (err) {
         console.error('Error: Cannot find preferences in db', err);
         res.status(500).send(err);
-      })
+      });
   },
 
   /** getGroupPreferences request **/
@@ -87,6 +140,18 @@ module.exports = {
   },
 
   addPreference: function (req, res) {
+    var user = req.body;
+    var clientId = user.clientId;
+    var preferences = user.preferences; // []
+
+    User.where({ clientId: clientId }).fetch()
+      .then(function (matchedUser) {
+        _savePreferences(matchedUser.id, clientId, preferences, 0, res);
+      })
+      .catch(function (err) {
+        console.error('Error: Cannot match clientId => ', clientId, ' - ', err);
+        res.status(500).send(err);
+      })
 
   }
 }
