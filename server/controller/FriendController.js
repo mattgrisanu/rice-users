@@ -82,15 +82,12 @@ var _checkForDuplicateAndSave = function (user_Id, friendClientId, allFriends, r
 module.exports = {
   getFriends: function (req, res) {
     var clientId = req.body.clientId; /************** what here? ***************/
-    var user = {
-      clientId: clientId
-    };
 
     _matchClientIdToId(clientId, function (err, matchedUser) {
       var user = {
         user_id: matchedUser.id
       };
-      
+
       Friend.where(user).fetchAll()
         .then(function (allFriends) { // primary key in user table
           _getFriendInfoFromAllFriends(allFriends.models, 0, [], res);
