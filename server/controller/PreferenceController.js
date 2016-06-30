@@ -6,30 +6,50 @@ var objectToArray = require('./../lib/utils.js').objectToArray;
 /**************
 * OUTPUT: [[client#1pref#1, client#1pref#2, ..., client#1pref#n], [], [], ... , []]
 */
-var _getUserPreferencesAsArray = function (clientId) {
-  return Preference.where({ clientId: clientId }).fetchAll()
+var _aggregatePreferences = function (allPreferences) {
+  var aggregatePreferences = [];
+
+  for (var preference = 0; preference < allPreferences.length; preference++) {
+    aggregatePreferences.push(allPreferences.models[preference].attributes.preference);
+  }
+
+  return aggregatePreferences;
+}
+
+var _getUserPreferencesAsArray = function (clientId, callback) {
+  Preference.where({ clientId: clientId }).fetchAll()
     .then(function (allPreferences) {
-      var aggregatePreferences = [];
-      for (var preference = 0; preference < allPreferences.length; preference++) {
-        aggregatePreferences.push(allPreferences.models[preference].attributes.preference);
-      }
-      return aggregatePreferences;    
+      console.log('prefs =>', allPreferences);
+      return callback(null, allPreferences);   
+    })
+    .catch(function (err) {
+      console.log('wjat?');
+      return callback(err, null);
     })
 };
 
 var _getUsersPreferencesAsArray = function (clientIdArray, preferencesSoFar, count, res) {
-  if (count >= clientIdArray.length) {
+  if (count === clientIdArray.length) {
     res.status(201).send(preferencesSoFar);
-    return preferencesSoFar;
+    return;
   } else {
-    _getUserPreferencesAsArray(clientIdArray[count])
-      .then(function (allPreferences) {
-        preferencesSoFar.push(allPreferences);
-        _getUsersPreferencesAsArray(clientIdArray, preferencesSoFar, ++count, res);
-      })
-      .catch(function (err) {
-        console.error('Error: Failed to get preferences for', clientIdArray[count], '=>', err);
-      })
+    return _getUserPreferencesAsArray(clientIdArray[count], function (err, allPreferences) {
+      if (err) {
+        console.error('Error: Cannot fetch preferences from clientId => ', clientIdArray[count], err);
+        res.status(500).send(err);
+        return;
+      } else {
+        var aggregatePreferences = _aggregatePreferences(allPreferences);
+
+        if (aggregatePreferences.length === 0) {
+          aggregatePreferences = 'No Preferences';
+        }
+
+        preferencesSoFar.push(aggregatePreferences);
+
+        return _getUsersPreferencesAsArray(clientIdArray, preferencesSoFar, ++count, res);
+      }
+    });
   }
 };
 /**************/
@@ -109,14 +129,22 @@ module.exports = {
   getPreferences: function (req, res) {
     var clientId = req.body.clientId; /************** what here? ***************/
 
-    _getUserPreferencesAsArray(clientId)
-      .then(function (allPreferences) {
-        res.status(200).send(allPreferences);
-      })
-      .catch(function (err) {
-        console.error('Error: Cannot find preferences in db', err);
+    _getUserPreferencesAsArray(clientId, function (err, allPreferences) {
+      if (err) {
+        console.error('Error: Cannot fetch preferences from clientId => ', clientId, err);
         res.status(500).send(err);
-      });
+        return;
+      } else {
+        var aggregatePreferences = _aggregatePreferences(allPreferences);
+
+        if (aggregatePreferences.length === 0) {
+          res.status(201).send('No Preferences => []');
+        } else {
+          res.status(201).send(aggregatePreferences);
+        }
+        return;
+      }
+    });
   },
 
   /** getGroupPreferences request **/
@@ -130,10 +158,11 @@ module.exports = {
   */
 
   /** getGroupPreferences response **/
-  /** res = []; => arrays of arrays of each user preference
+  /** res = []; => [[], [], [], []]arrays of arrays of each user preference
   */
   getGroupPreferences: function (req, res) {
     var clientIdArray = req.body.group;
+    var clientId = req.body.clientId;
     var allPreferences = []; // {pref: 0, ...}
 
     _getUsersPreferencesAsArray(clientIdArray, allPreferences, 0, res);
