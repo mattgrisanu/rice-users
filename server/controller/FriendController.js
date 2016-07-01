@@ -66,7 +66,8 @@ var _checkForDuplicateAndSave = function (user_Id, friendClientId, allFriends, r
 
       Friend.where(newFriend).fetchAll()
         .then(function (matchedFriend) {
-          if (matchedFriend.length === 0) {// check for duplicate
+          // check for duplicate
+          if (matchedFriend.length === 0) {
             new Friend(newFriend).save()
               .then(function (saved) {
                 console.log('Saved sucessfully to database', saved);

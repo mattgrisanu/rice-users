@@ -1,8 +1,0 @@
-{
-    "uid": "riceusers",
-    "append": true,
-    "watch": true,
-    "script": "server.js",
-    "sourceDir": "~/rice-users/server",
-    "args": ["--port", "4568"]
-}

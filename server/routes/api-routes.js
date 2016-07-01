@@ -15,5 +15,5 @@ module.exports = function (app) {
   app.post('/api/users/preferences', PreferenceController.getPreferences);
   app.post('/api/users/preferences/update', PreferenceController.addPreference);
   
-  app.post('/api/users/group/preferences', PreferenceController.getGroupPreferences);
+  app.post('/api/users/group/preferences', PreferenceController.getGroupPreferences); // change to /api/users/preferences/group
 };
