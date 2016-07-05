@@ -50,7 +50,7 @@ var _matchClientIdToId = function (clientId, callback) {
 
 var _checkForDuplicateAndSave = function (user_Id, friendClientId, allFriends, res) {
   if (friendClientId === allFriends[allFriends.length]) {
-    res.status(201).send('Finished adding friends');
+    res.status(201).send('Friends Added Successfully');
     return;
   }
 

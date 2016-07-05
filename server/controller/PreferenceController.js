@@ -106,7 +106,7 @@ var _savePreference = function (user_id, clientId, preference, res) {
 */
 var _savePreferences = function (user_id, clientId, preferencesArr, count, res) {
   if (count === preferencesArr.length) {
-    res.status(201).send('Save preferences successful');
+    res.status(201).send('Preferences Saved Successfully');
     return;
   }
 

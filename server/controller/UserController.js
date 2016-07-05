@@ -68,7 +68,7 @@ module.exports = {
         new User({ id: matchedUser.id }).save(newUser, { patch: true })
           .then(function (saved) {
             console.log('UPATED user =>', saved);
-            res.status(201).send('Succussfully updated User info');
+            res.status(201).send('Successfully Updated User Profile');
           })
           .catch(function (err) {
             console.error('Error: Updatin user info ', err);
