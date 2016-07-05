@@ -26,7 +26,7 @@ Input:
 
 Output:
  
-```json
+```
 {
     id           : *integer*,
     clientId     : *string*,
