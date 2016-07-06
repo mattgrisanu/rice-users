@@ -1,15 +1,15 @@
 # Rice Users Service
 
-Rice Users service handles and stores all user-related information for the application.
+> Users service handles and stores all user-related information for the application.
 
 ## Table of Contents
-#####[Getting started](#Getting-Started)
-#####[Technologies] (#Technologies)
-#####[Structure](#Structure) 
-#####[API Endpoints](#Endpoint)
-#####[Contributing] (#Contributing)
+ * [Usage](#Getting-Started)  
+ * [Technologies] (#Technologies)  
+ * [Structure](#Structure)  
+ * [API Endpoints](#Endpoint)  
+ * [Contributing] (#Contributing)  
 
-## <a id="Getting-Started"></a> Getting Started
+##<a id="Getting-Started"></a>Usage
 #### 1. Clone the repository
 
   Start by cloning the latest version of the `rice-users` repository on your local machine by running:
