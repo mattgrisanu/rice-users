@@ -7,7 +7,7 @@ Rice Users service handles and stores all user-related information for the appli
 #####[Technologies] (#Technologies)
 #####[Structure](#Structure) 
 #####[API Endpoints](#Endpoint)
-#####[Contributions] (#Contributions)
+#####[Contributing] (#Contributing)
 
 ## <a id="Getting-Started"></a> Getting Started
 #### 1. Clone the repository
@@ -315,4 +315,4 @@ Output:
 ]
 ```  
 
-## <a id="Contributions"></a>Contributions
+## <a id="Contributing"></a>Contributing
