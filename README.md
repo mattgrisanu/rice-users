@@ -60,10 +60,6 @@
 - Bookshelf/Knex
 - MySQL
 
-##### Testing:
-- Mocha
-- Chai
-
 ##### Deployment:
 - AWS EC2
 - AWS RDS
@@ -82,7 +78,6 @@
 │   ├── /routes/                # Routes for incoming AJAX requests
 │   ├── /lib/                   # Library for utility functions
 │   └── /server.js              # Server-side startup script
-├── /test/                      # Server-side tests
 └── package.json                # npm configuration file
 └── .README.md                  # Quick overview of the Users Service
 └── Dockerfile                  # Docker build file
